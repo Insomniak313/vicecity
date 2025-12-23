@@ -11,6 +11,8 @@ const params = new URLSearchParams(window.location.search);
 const replaceFetch = {from: "https://cdn.dos.zone/vcsky/", to: "./vcsky/"}
 const replaceBR = "/vcbr/"
 
+const autoFullScreen = true;
+
 // F3 for activation (cheat-menu)
 const cheatsEnabled = params.get('cheats') === "1"
 
@@ -400,7 +402,7 @@ clickToPlay.addEventListener('click', (e) => {
     }
     if (e.target === clickToPlay || e.target === clickLink) {
         startGame(e);
-        if (!isMobile && false) {
+        if (!isMobile && autoFullScreen) {
             if (window.top === window) {
                 document.body.requestFullscreen(document.documentElement);
             } else {
