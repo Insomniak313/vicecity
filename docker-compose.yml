@@ -1,0 +1,16 @@
+services:
+  reVCDOS:
+    hostname: reVCDOS
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "${OUT_HOST-0.0.0.0}:${OUT_PORT-8000}:${IN_PORT-8000}"
+    volumes:
+      - .:/app
+    networks:
+      - default
+    command:
+      - python
+      - server.py
+    restart: unless-stopped
