@@ -7,7 +7,7 @@ Web-based port of GTA: Vice City running in browser via WebAssembly.
 - Python 3.8+
 - Dependencies from `requirements.txt`
 
-## Installation
+## Installation (if you want to use a public hosting go to PHP)
 
 ```bash
 pip install -r requirements.txt
@@ -28,6 +28,10 @@ Server starts at `http://localhost:8000`
 | `lang` | `en`, `ru` | Game language |
 | `cheats` | `1` | Enable cheat menu (F3) |
 
+## PHP (NO INSTALL)
+If you want to run the game from a hosted environment with `PHP 8.0` or above, just copy the contents of this repo to your desired hosting
+By default the `index.php` and `.htaccess` will get the job done. 
+
 **Examples:**
 - `http://localhost:8000/?lang=ru` — Russian version
 - `http://localhost:8000/?lang=en&cheats=1` — English + cheats
@@ -36,6 +40,8 @@ Server starts at `http://localhost:8000`
 
 ```
 ├── server.py           # FastAPI proxy server
+├── index.php           # php proxy server
+├── .htaccess           # apache config for php
 ├── requirements.txt    # Python dependencies
 ├── dist/               # Game client files
 │   ├── index.html      # Main page
@@ -103,3 +109,5 @@ Based on open-source re3/reVC project. Not affiliated with Rockstar Games.
 **Deobfuscated by**: [@Lolendor](https://github.com/Lolendor)
 
 **Russian translation:** [GamesVoice](https://www.gamesvoice.ru/)
+
+**Shared hosting by:** [Rohamgames](https://github.com/rohamgames)
