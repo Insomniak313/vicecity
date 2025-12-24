@@ -204,7 +204,7 @@ function wrapIDBFS(logger) {
      * Clears all entries in the local IndexedDB for a mountpoint.
      */
     async function clearDatabase(idbfs_instance, mountpoint) {
-        const db = await getDatabase(mountpoint);
+        const db = await getDatabase(idbfs_instance, mountpoint);
         const transaction = db.transaction([idbfs_instance.DB_STORE_NAME], "readwrite");
         const store = transaction.objectStore(idbfs_instance.DB_STORE_NAME);
         
