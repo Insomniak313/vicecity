@@ -32,7 +32,7 @@ Web-based port of GTA: Vice City running in browser via WebAssembly.
 The easiest way to get started is using Docker Compose:
 
 ```bash
-docker compose up -d --build
+VCSKY_CACHE=1 VCBR_CACHE=1 docker compose up -d --build
 ```
 
 To configure server options via environment variables:
@@ -54,6 +54,8 @@ IN_PORT=3000 AUTH_LOGIN=admin AUTH_PASSWORD=secret CUSTOM_SAVES=1 docker compose
 | `VCBR_LOCAL` | Serve vcbr from local directory (set to `1`) |
 | `VCSKY_URL` | Custom vcsky proxy URL |
 | `VCBR_URL` | Custom vcbr proxy URL |
+| `VCSKY_CACHE` | Cache vcsky files locally while proxying (set to `1`) |
+| `VCBR_CACHE` | Cache vcbr files locally while proxying (set to `1`) |
 
 ### Option 2: Local Installation
 
@@ -64,7 +66,7 @@ pip install -r requirements.txt
 
 2. Start the server:
 ```bash
-python server.py
+python server.py --vcsky_cache --vcbr_cache
 ```
 
 Server starts at `http://localhost:8000`
@@ -85,6 +87,8 @@ By default the `index.php` and `.htaccess` will get the job done.
 | `--vcbr_local` | flag | disabled | Serve vcbr from local `vcbr/` directory |
 | `--vcsky_url` | string | `https://cdn.dos.zone/vcsky/` | Custom vcsky proxy URL |
 | `--vcbr_url` | string | `https://br.cdn.dos.zone/vcsky/` | Custom vcbr proxy URL |
+| `--vcsky_cache` | flag | disabled | Cache vcsky files locally while proxying |
+| `--vcbr_cache` | flag | disabled | Cache vcbr files locally while proxying |
 
 **Examples:**
 ```bash
@@ -97,11 +101,14 @@ python server.py --custom_saves
 # Enable HTTP Basic Authentication
 python server.py --login admin --password secret123
 
-# Use local vcsky and vcbr files (offline mode)
+# Use local vcsky and vcbr files (fully offline mode)
 python server.py --vcsky_local --vcbr_local
 
 # Use custom proxy URLs
 python server.py --vcsky_url https://my-cdn.example.com/vcsky/ --vcbr_url https://my-cdn.example.com/vcbr/
+
+# Cache files locally while proxying (hybrid mode) (recommended)
+python server.py --vcsky_cache --vcbr_cache
 
 # All options combined
 python server.py --port 3000 --custom_saves --login admin --password secret123 --vcsky_local --vcbr_local
@@ -110,6 +117,8 @@ python server.py --port 3000 --custom_saves --login admin --password secret123 -
 > **Note:** HTTP Basic Auth is only enabled when both `--login` and `--password` are provided.
 
 > **Note:** By default, vcsky and vcbr are proxied from DOS Zone CDN. Use `--vcsky_local` and `--vcbr_local` flags to serve files from local directories instead.
+
+> **Note:** Use `--vcsky_cache` and `--vcbr_cache` to cache proxied files locally. Files are downloaded once and served from local storage on subsequent requests.
 
 ## URL Parameters
 
