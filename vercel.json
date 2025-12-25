@@ -10,21 +10,18 @@
       "use": "@vercel/python"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/vcsky/(.*)",
-      "dest": "/api/vcsky.py"
+      "source": "/vcsky/:path*",
+      "destination": "/api/vcsky.py"
     },
     {
-      "src": "/vcbr/(.*)",
-      "dest": "/api/vcbr.py"
+      "source": "/vcbr/:path*",
+      "destination": "/api/vcbr.py"
     },
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/$1"
+      "source": "/:path*",
+      "destination": "/dist/:path*"
     }
   ],
   "headers": [
