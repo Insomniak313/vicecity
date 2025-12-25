@@ -8,33 +8,21 @@
     {
       "src": "api/vcbr.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "dist/**",
-      "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/vcsky/(.*)",
-      "dest": "/api/vcsky.py"
+      "source": "/vcsky/:path*",
+      "destination": "/api/vcsky.py"
     },
     {
-      "src": "/vcbr/(.*)",
-      "dest": "/api/vcbr.py"
-    },
-    {
-      "src": "/",
-      "dest": "/dist/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/$1"
+      "source": "/vcbr/:path*",
+      "destination": "/api/vcbr.py"
     }
   ],
   "headers": [
     {
-      "source": "/dist/(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cross-Origin-Opener-Policy",
