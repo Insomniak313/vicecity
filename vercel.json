@@ -18,15 +18,11 @@
     {
       "source": "/vcbr/:path*",
       "destination": "/api/vcbr.py"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/dist/:path*"
     }
   ],
   "headers": [
     {
-      "source": "/dist/(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cross-Origin-Opener-Policy",
