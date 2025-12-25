@@ -2,6 +2,14 @@
   "version": 2,
   "builds": [
     {
+      "src": "dist/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "api/vcsky.py",
       "use": "@vercel/python"
     },
@@ -18,6 +26,10 @@
     {
       "source": "/vcbr/:path*",
       "destination": "/api/vcbr.py"
+    },
+    {
+      "source": "/",
+      "destination": "/dist/index.html"
     }
   ],
   "headers": [
