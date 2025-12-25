@@ -1,62 +1,54 @@
 from http.server import BaseHTTPRequestHandler
 import urllib.request
-import urllib.parse
-import urllib.error
 
-BR_BASE_URL = "https://br.cdn.dos.zone/vcsky/"
-
-def handler(request, context=None):
-    """
-    Vercel serverless function handler
-    """
-    try:
-        # Extract the path - Vercel passes the full path including /vcbr/
-        path = request.url.split('/vcbr/')[-1] if '/vcbr/' in request.url else ''
-        
-        # Build the full URL
-        url = urllib.parse.urljoin(BR_BASE_URL, path)
-        
-        # Create the proxied request
-        req = urllib.request.Request(url)
-        
-        # Forward some headers
-        for header in ['User-Agent', 'Accept', 'Accept-Encoding']:
-            if header in request.headers:
-                req.add_header(header, request.headers[header])
-        
-        # Make the request
-        with urllib.request.urlopen(req, timeout=10) as response:
-            # Read response content
-            content = response.read()
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        try:
+            # Extract the path after /vcbr/
+            path = self.path.split('/vcbr/')[-1] if '/vcbr/' in self.path else ''
             
-            # Build response headers
-            headers = {
-                'Cross-Origin-Opener-Policy': 'same-origin',
-                'Cross-Origin-Embedder-Policy': 'require-corp',
-                'Access-Control-Allow-Origin': '*',
-            }
+            # Build the target URL
+            target_url = f"https://br.cdn.dos.zone/vcsky/{path}"
             
-            # Forward content-type and other headers
-            for header, value in response.headers.items():
-                if header.lower() not in ['content-length', 'transfer-encoding', 'connection']:
-                    headers[header] = value
+            # Create request
+            req = urllib.request.Request(target_url)
             
-            return Response(content, status=response.status, headers=headers)
+            # Forward headers
+            for header in ['User-Agent', 'Accept', 'Accept-Encoding']:
+                if self.headers.get(header):
+                    req.add_header(header, self.headers.get(header))
             
-    except urllib.error.HTTPError as e:
-        return Response(e.read(), status=e.code, headers={
-            'Access-Control-Allow-Origin': '*'
-        })
-        
-    except Exception as e:
-        return Response(str(e).encode(), status=500, headers={
-            'Access-Control-Allow-Origin': '*'
-        })
-
-
-# Vercel Response class
-class Response:
-    def __init__(self, body, status=200, headers=None):
-        self.body = body
-        self.status = status
-        self.headers = headers or {}
+            # Make request
+            with urllib.request.urlopen(req, timeout=10) as response:
+                # Send response
+                self.send_response(response.status)
+                
+                # Send CORS headers
+                self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+                self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                
+                # Forward content headers
+                if response.headers.get('Content-Type'):
+                    self.send_header('Content-Type', response.headers.get('Content-Type'))
+                if response.headers.get('Content-Encoding'):
+                    self.send_header('Content-Encoding', response.headers.get('Content-Encoding'))
+                
+                self.end_headers()
+                
+                # Send body
+                self.wfile.write(response.read())
+                
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(str(e).encode())
+    
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
