@@ -1,7 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "echo 'No build needed, using pre-built dist/'",
-  "outputDirectory": "dist",
+  "public": true,
   "builds": [
     {
       "src": "api/*.py",
@@ -11,56 +10,15 @@
   "routes": [
     {
       "src": "/vcsky/(.*)",
-      "dest": "/api/vcsky"
+      "dest": "/api/vcsky.py"
     },
     {
       "src": "/vcbr/(.*)",
-      "dest": "/api/vcbr"
-    },
-    {
-      "src": "/modules/(.*)",
-      "dest": "/dist/modules/$1",
-      "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/(.*\\.(js|css|wasm|jpg|mp4|png|svg|br))",
-      "dest": "/dist/$1",
-      "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp"
-      }
-    },
-    {
-      "src": "/",
-      "dest": "/dist/index.html",
-      "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp"
-      }
+      "dest": "/api/vcbr.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/$1",
-      "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp"
-      },
-      "continue": true
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/index.html",
-      "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp"
-      }
+      "dest": "/dist/$1"
     }
   ],
   "headers": [
@@ -82,7 +40,7 @@
       ]
     },
     {
-      "source": "/(.*.wasm)",
+      "source": "/(.*\\.wasm)",
       "headers": [
         {
           "key": "Content-Type",
@@ -91,7 +49,7 @@
       ]
     },
     {
-      "source": "/(.*.js)",
+      "source": "/(.*\\.js)",
       "headers": [
         {
           "key": "Content-Type",
@@ -100,7 +58,7 @@
       ]
     },
     {
-      "source": "/(.*.br)",
+      "source": "/(.*\\.br)",
       "headers": [
         {
           "key": "Content-Encoding",
