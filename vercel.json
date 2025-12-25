@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "public": true,
   "builds": [
     {
-      "src": "api/*.py",
+      "src": "api/vcsky.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/vcbr.py",
       "use": "@vercel/python"
     }
   ],
@@ -17,13 +20,16 @@
       "dest": "/api/vcbr.py"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
       "dest": "/dist/$1"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/dist/(.*)",
       "headers": [
         {
           "key": "Cross-Origin-Opener-Policy",

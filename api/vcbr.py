@@ -1,54 +1,70 @@
 from http.server import BaseHTTPRequestHandler
-import urllib.request
+from urllib import request as urllib_request
+from urllib.error import HTTPError, URLError
+import json
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
-            # Extract the path after /vcbr/
-            path = self.path.split('/vcbr/')[-1] if '/vcbr/' in self.path else ''
+            # Extraire le chemin
+            path = self.path
             
-            # Build the target URL
+            # Enlever le préfixe /vcbr/ si présent
+            if '/vcbr/' in path:
+                path = path.split('/vcbr/', 1)[1]
+            else:
+                path = path.lstrip('/')
+            
+            # Construire l'URL cible
             target_url = f"https://br.cdn.dos.zone/vcsky/{path}"
             
-            # Create request
-            req = urllib.request.Request(target_url)
+            # Créer la requête
+            req = urllib_request.Request(target_url)
             
-            # Forward headers
-            for header in ['User-Agent', 'Accept', 'Accept-Encoding']:
+            # Forward headers importants
+            for header in ['User-Agent', 'Accept', 'Accept-Encoding', 'Range']:
                 if self.headers.get(header):
                     req.add_header(header, self.headers.get(header))
             
-            # Make request
-            with urllib.request.urlopen(req, timeout=10) as response:
-                # Send response
-                self.send_response(response.status)
-                
-                # Send CORS headers
-                self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
-                self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                
-                # Forward content headers
-                if response.headers.get('Content-Type'):
-                    self.send_header('Content-Type', response.headers.get('Content-Type'))
-                if response.headers.get('Content-Encoding'):
-                    self.send_header('Content-Encoding', response.headers.get('Content-Encoding'))
-                
-                self.end_headers()
-                
-                # Send body
-                self.wfile.write(response.read())
-                
+            # Faire la requête
+            try:
+                with urllib_request.urlopen(req, timeout=10) as response:
+                    # Envoyer le status code
+                    self.send_response(response.status)
+                    
+                    # Envoyer les headers CORS
+                    self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+                    self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    
+                    # Forward les headers importants
+                    for header in ['Content-Type', 'Content-Encoding', 'Content-Length', 'Accept-Ranges', 'Content-Range']:
+                        value = response.headers.get(header)
+                        if value:
+                            self.send_header(header, value)
+                    
+                    self.end_headers()
+                    
+                    # Envoyer le body
+                    self.wfile.write(response.read())
+            
+            except HTTPError as e:
+                self.send_error(e.code, e.reason)
+        
         except Exception as e:
             self.send_response(500)
-            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(str(e).encode())
+            error_msg = json.dumps({'error': str(e)})
+            self.wfile.write(error_msg.encode())
     
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Range')
         self.end_headers()
+    
+    def do_HEAD(self):
+        self.do_GET()
