@@ -1,0 +1,14 @@
+server.py
+index.php
+.htaccess
+docker
+docker-compose.yml
+requirements.txt
+additions
+vcsky
+vcbr
+.git
+.gitignore
+README.md
+__pycache__
+*.pyc

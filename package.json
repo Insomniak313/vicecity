@@ -1,0 +1,12 @@
+{
+  "name": "vicecity-wasm",
+  "version": "1.0.0",
+  "description": "GTA Vice City HTML5 Port",
+  "scripts": {
+    "build": "echo 'Using pre-built dist/ directory'",
+    "dev": "python server.py"
+  },
+  "keywords": ["gta", "vice-city", "wasm", "webassembly"],
+  "author": "DOS Zone",
+  "license": "MIT"
+}
