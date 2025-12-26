@@ -14,13 +14,27 @@
       "use": "@vercel/python"
     }
   ],
-  "routes": [
-    { "src": "/vcsky/(.*)", "dest": "/api/vcsky.py" },
-    { "src": "/vcbr/(.*)", "dest": "/api/vcbr.py" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/dist/(.*)", "dest": "/dist/$1" },
-    { "src": "/", "dest": "/dist/index.html" },
-    { "src": "/(.*)", "dest": "/dist/$1" }
+  "rewrites": [
+    {
+      "source": "/vcsky/:path*",
+      "destination": "/api/vcsky.py"
+    },
+    {
+      "source": "/vcbr/:path*",
+      "destination": "/api/vcbr.py"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/dist/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/dist/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/dist/:path*"
+    }
   ],
   "headers": [
     {
