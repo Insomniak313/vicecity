@@ -286,7 +286,16 @@ async function loadGame(data) {
     window.Module = Module;
     const script = document.createElement('script');
     script.async = true;
-    script.src = 'index.js';
+    const currentScriptUrl = (() => {
+        const currentScript = document.currentScript;
+        if (currentScript && currentScript.src) return new URL(currentScript.src);
+        const scripts = document.getElementsByTagName('script');
+        const lastScript = scripts[scripts.length - 1];
+        if (lastScript && lastScript.src) return new URL(lastScript.src);
+        return new URL(window.location.href);
+    })();
+    const baseUrl = new URL('.', currentScriptUrl);
+    script.src = new URL('index.js', baseUrl).toString();
     document.body.appendChild(script);
 
     document.body.classList.add('gameIsStarted');
