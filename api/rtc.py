@@ -40,6 +40,10 @@ def _read_json(handler: BaseHTTPRequestHandler) -> dict:
 class _UpstashKV:
     """
     Minimal Upstash REST client compatible with Vercel KV env vars:
+      - KV_REST_API_URL
+      - KV_REST_API_TOKEN
+
+    Also supports direct Upstash env vars:
       - UPSTASH_REDIS_REST_URL
       - UPSTASH_REDIS_REST_TOKEN
 
@@ -50,8 +54,23 @@ class _UpstashKV:
     """
 
     def __init__(self) -> None:
-        self.url = os.environ.get("UPSTASH_REDIS_REST_URL") or ""
-        self.token = os.environ.get("UPSTASH_REDIS_REST_TOKEN") or ""
+        # Vercel KV (official):
+        #   KV_REST_API_URL / KV_REST_API_TOKEN (Upstash REST underneath)
+        #
+        # Upstash direct (also common):
+        #   UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
+        self.url = (
+            os.environ.get("UPSTASH_REDIS_REST_URL")
+            or os.environ.get("KV_REST_API_URL")
+            or ""
+        )
+        self.token = (
+            os.environ.get("UPSTASH_REDIS_REST_TOKEN")
+            or os.environ.get("KV_REST_API_TOKEN")
+            # fallback for read-only flows (still useful for GET endpoints)
+            or os.environ.get("KV_REST_API_READ_ONLY_TOKEN")
+            or ""
+        )
 
     def is_configured(self) -> bool:
         return bool(self.url and self.token)
@@ -111,7 +130,7 @@ class handler(BaseHTTPRequestHandler):
                 status=501,
                 data={
                     "error": "Vercel KV not configured",
-                    "hint": "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN (Vercel KV).",
+                    "hint": "Set KV_REST_API_URL and KV_REST_API_TOKEN (recommended) or UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.",
                 },
             )
 
@@ -164,7 +183,7 @@ class handler(BaseHTTPRequestHandler):
                 status=501,
                 data={
                     "error": "Vercel KV not configured",
-                    "hint": "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN (Vercel KV).",
+                    "hint": "Set KV_REST_API_URL and KV_REST_API_TOKEN (recommended) or UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.",
                 },
             )
 

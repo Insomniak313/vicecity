@@ -128,6 +128,30 @@ Proxie les requêtes vers `https://br.cdn.dos.zone/vcsky/`
 | **Stockage persistant** | ❌ Non disponible | Pas de saves locaux |
 | **WebSocket** | Limité | Pas critique pour ce projet |
 
+## 🧰 Vercel KV (recommandé) — RTC / Multijoueur P2P
+
+Ce projet inclut un “signaling” WebRTC via `api/rtc.py` utilisé par `dist/p2p-webrtc.js` (endpoints `/api/rtc/*`).
+Pour qu’il fonctionne, vous devez connecter **Vercel KV** au projet afin que Vercel injecte les variables d’environnement KV.
+
+### Étapes (Dashboard Vercel)
+
+1. **Storage → KV → Create**
+2. **Connect** le store KV à votre projet
+3. Vérifiez dans **Project → Settings → Environment Variables** que vous avez (au moins) :
+   - `KV_REST_API_URL`
+   - `KV_REST_API_TOKEN`
+4. **Redeploy** (les env vars ne sont prises en compte qu’après un déploiement)
+
+### Variables supportées
+
+- **Vercel KV (officiel)**: `KV_REST_API_URL`, `KV_REST_API_TOKEN` (et optionnellement `KV_REST_API_READ_ONLY_TOKEN`)
+- **Upstash direct** (fallback): `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+
+### Test rapide
+
+- Ouvrez la page, puis cliquez **“Créer une salle”** (UI multijoueur).
+- Si KV n’est pas configuré, les endpoints `/api/rtc/*` répondront `501` avec un message d’aide.
+
 ## 🆚 Comparaison avec le serveur Python original
 
 | Fonctionnalité | Python (server.py) | Vercel |

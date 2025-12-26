@@ -43,6 +43,27 @@ vercel --prod
 - **`/vcsky/*`** → Proxifié via la fonction serverless `api/vcsky.py` vers `https://cdn.dos.zone/vcsky/`
 - **`/vcbr/*`** → Proxifié via la fonction serverless `api/vcbr.py` vers `https://br.cdn.dos.zone/vcsky/`
 
+## Vercel KV (optionnel mais recommandé)
+
+Le projet inclut un endpoint de “signaling” WebRTC (`/api/rtc/*`) pour le mode multijoueur P2P.
+Pour l’activer, connectez un store **Vercel KV** au projet.
+
+### 1) Créer / connecter le store KV
+
+Dans le dashboard Vercel:
+- **Storage → KV → Create**
+- Ouvrez le store, puis **Connect Project** (sélectionnez votre projet)
+
+### 2) Vérifier les variables d’environnement
+
+Dans **Project → Settings → Environment Variables**, vous devez avoir au minimum :
+- `KV_REST_API_URL`
+- `KV_REST_API_TOKEN`
+
+### 3) Redeploy
+
+Les variables KV ne seront prises en compte qu’après un **Redeploy** (ou un nouveau déploiement via commit).
+
 ## Headers CORS configurés
 
 Les headers suivants sont automatiquement ajoutés :

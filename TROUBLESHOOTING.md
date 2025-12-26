@@ -74,6 +74,17 @@ Empêche le déploiement de fichiers inutiles (Python backend, Docker, etc.)
 **Cause** : Timeout des fonctions serverless  
 **Solution** : Vercel limite les fonctions à 10s (gratuit) / 60s (pro)
 
+#### Erreur : “signaling indisponible” / `/api/rtc/*` renvoie `501`
+**Cause** : **Vercel KV** non configuré (variables d’environnement manquantes).  
+**Solution** :
+
+1. Dans Vercel: **Storage → KV** → créez (ou sélectionnez) un store
+2. **Connect** le store KV à votre projet
+3. Vérifiez dans **Project → Settings → Environment Variables** la présence de :
+   - `KV_REST_API_URL`
+   - `KV_REST_API_TOKEN`
+4. **Redeploy** le projet (obligatoire pour appliquer les env vars)
+
 #### Erreur : 404 sur les fichiers statiques
 **Cause** : Chemins incorrects dans `vercel.json`  
 **Solution** : Vérifiez que tous vos fichiers sont bien dans `/dist/`
