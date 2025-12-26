@@ -12,9 +12,17 @@
     {
       "src": "api/vcbr.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "api/rtc.py",
+      "use": "@vercel/python"
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/rtc/:path*",
+      "destination": "/api/rtc.py"
+    },
     {
       "source": "/vcsky/:path*",
       "destination": "/api/vcsky.py"

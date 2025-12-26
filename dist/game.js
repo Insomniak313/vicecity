@@ -297,6 +297,9 @@ async function loadGame(data) {
 
     const emulator = new GamepadEmulator();
     const gamepad = emulator.AddEmulatedGamepad(null, true);
+    // Expose emulator for P2P "remote play" (WebRTC input injection)
+    window.__revcGamepadEmulator = emulator;
+    window.__revcGamepadIndex = 0;
     const gamepadEmulatorConfig = {
         directions: { up: true, down: true, left: true, right: true },
         dragDistance: 100,
