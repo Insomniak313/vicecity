@@ -9,7 +9,17 @@ from additions.cache import proxy_and_cache, get_local_file
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--port", type=int, default=8000)
-parser.add_argument("--custom_saves", action="store_true")
+parser.add_argument(
+    "--custom_saves",
+    action="store_true",
+    default=True,
+    help="Enable local backend for saves (default: enabled).",
+)
+parser.add_argument(
+    "--no_custom_saves",
+    action="store_true",
+    help="Disable local backend for saves (overrides --custom_saves).",
+)
 parser.add_argument("--login", type=str)
 parser.add_argument("--password", type=str)
 parser.add_argument("--vcsky_local", action="store_true", help="Serve vcsky from local directory instead of proxy")
@@ -25,8 +35,12 @@ app = FastAPI()
 if args.login and args.password:
     app.add_middleware(BasicAuthMiddleware, username=args.login, password=args.password)
 
-if args.custom_saves:
+custom_saves_enabled = bool(args.custom_saves) and not bool(args.no_custom_saves)
+if custom_saves_enabled:
+    # Root paths used by dist/jsdos-cloud-sdk-local.js
     app.include_router(saves.router)
+    # Vercel-style /api/* compatibility
+    app.include_router(saves.router, prefix="/api")
 
 VCSKY_BASE_URL = args.vcsky_url
 VCBR_BASE_URL = args.vcbr_url
@@ -51,6 +65,11 @@ async def vc_sky_proxy(request: Request, path: str):
         return await proxy_and_cache(request, url, local_path)
     return await proxy_and_cache(request, url, disable_cache=True)
 
+# Vercel-style /api/* compatibility
+@app.api_route("/api/vcsky/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
+async def vc_sky_proxy_api(request: Request, path: str):
+    return await vc_sky_proxy(request, path)
+
 # vcbr routes - either local or proxy
 @app.api_route("/vcbr/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
 async def vc_br_proxy(request: Request, path: str):
@@ -64,6 +83,11 @@ async def vc_br_proxy(request: Request, path: str):
         return await proxy_and_cache(request, url, local_path)
     return await proxy_and_cache(request, url, disable_cache=True)
 
+# Vercel-style /api/* compatibility
+@app.api_route("/api/vcbr/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
+async def vc_br_proxy_api(request: Request, path: str):
+    return await vc_br_proxy(request, path)
+
 @app.get("/")
 async def read_index():
     if os.path.exists("dist/index.html"):
@@ -71,7 +95,7 @@ async def read_index():
             content = f.read()
         
         # Inject custom_saves status
-        custom_saves_val = "1" if args.custom_saves else "0"
+        custom_saves_val = "1" if custom_saves_enabled else "0"
         content = content.replace(
             'new URLSearchParams(window.location.search).get("custom_saves") === "1"',
             f'"{custom_saves_val}" === "1"'
@@ -93,4 +117,5 @@ if __name__ == "__main__":
     print(f"Starting server on http://localhost:{args.port}")
     print(f"vcsky: {'local' if args.vcsky_local else 'proxy'} ({VCSKY_BASE_URL if not args.vcsky_local else 'vcsky/'})")
     print(f"vcbr: {'local' if args.vcbr_local else 'proxy'} ({VCBR_BASE_URL if not args.vcbr_local else 'vcbr/'})")
+    print(f"custom_saves: {'enabled' if custom_saves_enabled else 'disabled'}")
     start_server()
