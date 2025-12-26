@@ -43,9 +43,9 @@ class _UpstashKV:
       - KV_REST_API_URL
       - KV_REST_API_TOKEN
 
-    Also supports direct Upstash env vars:
-      - UPSTASH_REDIS_REST_URL
-      - UPSTASH_REDIS_REST_TOKEN
+    Note:
+      This codebase can also be wired to Upstash directly, but the recommended
+      setup for this project is Vercel KV (Vercel Redis/KV integration).
 
     Uses REST endpoints like:
       GET  {url}/get/{key}
@@ -130,7 +130,7 @@ class handler(BaseHTTPRequestHandler):
                 status=501,
                 data={
                     "error": "Vercel KV not configured",
-                    "hint": "Set KV_REST_API_URL and KV_REST_API_TOKEN (recommended) or UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.",
+                    "hint": "Connect Vercel KV (Redis) to this project so KV_REST_API_URL and KV_REST_API_TOKEN are set.",
                 },
             )
 
@@ -183,7 +183,7 @@ class handler(BaseHTTPRequestHandler):
                 status=501,
                 data={
                     "error": "Vercel KV not configured",
-                    "hint": "Set KV_REST_API_URL and KV_REST_API_TOKEN (recommended) or UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.",
+                    "hint": "Connect Vercel KV (Redis) to this project so KV_REST_API_URL and KV_REST_API_TOKEN are set.",
                 },
             )
 

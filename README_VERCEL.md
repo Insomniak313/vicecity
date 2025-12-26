@@ -133,16 +133,6 @@ Proxie les requêtes vers `https://br.cdn.dos.zone/vcsky/`
 Ce projet inclut un “signaling” WebRTC via `api/rtc.py` utilisé par `dist/p2p-webrtc.js` (endpoints `/api/rtc/*`).
 Pour qu’il fonctionne, vous devez connecter **Vercel KV** au projet afin que Vercel injecte les variables d’environnement KV.
 
-### Alternative gratuite (sans Vercel KV) : Upstash Redis (REST)
-
-Si **Vercel KV** n’est pas dispo sur votre plan, vous pouvez utiliser **Upstash Redis** directement (souvent avec un free tier) :
-
-1. Créez une base Redis sur Upstash
-2. Récupérez :
-   - `UPSTASH_REDIS_REST_URL`
-   - `UPSTASH_REDIS_REST_TOKEN`
-3. Ajoutez-les dans Vercel (**Project → Settings → Environment Variables**) puis **Redeploy**
-
 ### Étapes (Dashboard Vercel)
 
 1. **Storage → KV → Create**
@@ -152,10 +142,11 @@ Si **Vercel KV** n’est pas dispo sur votre plan, vous pouvez utiliser **Upstas
    - `KV_REST_API_TOKEN`
 4. **Redeploy** (les env vars ne sont prises en compte qu’après un déploiement)
 
-### Variables supportées
+### Variables attendues
 
-- **Vercel KV (officiel)**: `KV_REST_API_URL`, `KV_REST_API_TOKEN` (et optionnellement `KV_REST_API_READ_ONLY_TOKEN`)
-- **Upstash direct** (fallback): `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+- `KV_REST_API_URL`
+- `KV_REST_API_TOKEN`
+- (optionnel) `KV_REST_API_READ_ONLY_TOKEN`
 
 ### Test rapide
 
