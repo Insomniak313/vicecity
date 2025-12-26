@@ -128,6 +128,54 @@ Proxie les requêtes vers `https://br.cdn.dos.zone/vcsky/`
 | **Stockage persistant** | ❌ Non disponible | Pas de saves locaux |
 | **WebSocket** | Limité | Pas critique pour ce projet |
 
+## 🧰 Vercel KV (recommandé) — RTC / Multijoueur P2P
+
+Ce projet inclut un “signaling” WebRTC via `api/rtc.py` utilisé par `dist/p2p-webrtc.js` (endpoints `/api/rtc/*`).
+Pour qu’il fonctionne, vous devez connecter **Vercel KV** au projet afin que Vercel injecte les variables d’environnement KV.
+
+### Étapes (Dashboard Vercel)
+
+1. **Storage → KV → Create**
+2. **Connect** le store KV à votre projet
+3. Vérifiez dans **Project → Settings → Environment Variables** que vous avez (au moins) :
+   - `KV_REST_API_URL`
+   - `KV_REST_API_TOKEN`
+4. **Redeploy** (les env vars ne sont prises en compte qu’après un déploiement)
+
+### Variables attendues
+
+- **Option 1 (KV REST / “Vercel KV”)**
+  - `KV_REST_API_URL`
+  - `KV_REST_API_TOKEN`
+  - (optionnel) `KV_REST_API_READ_ONLY_TOKEN`
+
+- **Option 2 (Redis URL / “Vercel Redis”)**
+  - `REDIS_URL` (format `redis://...` ou `rediss://...`)
+  - (optionnel) `REDIS_TLS=1` si votre Redis exige TLS mais fournit une URL en `redis://`
+
+### Test rapide
+
+- Ouvrez la page, puis cliquez **“Créer une salle”** (UI multijoueur).
+- Si KV n’est pas configuré, les endpoints `/api/rtc/*` répondront `501` avec un message d’aide.
+
+## 💾 Saves persistantes sur Vercel via Blob
+
+Vercel n’ayant pas de disque persistant, les saves “local backend” peuvent être rendues persistantes via **Vercel Blob**.
+Ce repo expose désormais :
+- `GET /token/get?id=xxxxx`
+- `POST /saves/upload`
+- `GET /saves/download/{token}/{fileName}`
+
+### Activation
+
+1. Dans Vercel: **Storage → Blob** → créez/choisissez un store et connectez-le au projet
+2. Vérifiez que vous avez `BLOB_READ_WRITE_TOKEN` (et optionnellement `BLOB_READ_ONLY_TOKEN`) dans les env vars
+3. **Redeploy**
+
+### Utilisation
+
+Ajoutez `?custom_saves=1` à l’URL pour utiliser `dist/jsdos-cloud-sdk-local.js` (backend local) avec Blob côté serveur.
+
 ## 🆚 Comparaison avec le serveur Python original
 
 | Fonctionnalité | Python (server.py) | Vercel |
