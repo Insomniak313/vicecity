@@ -83,14 +83,9 @@ let haveOriginalGame = false;
         },
     };
 
-    let currentLanguage = navigator.language.split("-")[0] === "ru" ? "ru" : "en";
-    if (params.get("lang") === "ru") {
-        currentLanguage = "ru";
-    // }
-    // if (params.get("lang") === "en") {
-    }else{
-        currentLanguage = "en";
-    }
+    // Force the UI language to English.
+    // The game assets can still be switched via ?lang=ru, but all on-page text remains English.
+    let currentLanguage = "en";
 
     window.t = function (key) {
         return translations[currentLanguage][key];
@@ -522,7 +517,7 @@ if (localStorage.getItem('vcsky.key')) {
     updateToken(keyInput.value);
 } else {
     keyStatus.textContent = t('invalidKey');
-    keyStatus.style.color = 'shite';
+    keyStatus.style.color = 'white';
     keyStatus.style.fontWeight = 'normal';
 }
 
