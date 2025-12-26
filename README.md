@@ -1,241 +1,132 @@
-# GTA Vice City — HTML5 Port (DOS Zone)
+# GTA: Vice City — WebAssembly (browser port)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/13GFRIxTwVbixv0Vup9MSVXnB4SLmA3G7?usp=sharing)
+This repository ships a **pre-built web client** in `dist/` and a lightweight backend (optional) to:
 
-> **Fast Start:** Run the server in one click using Google Colab. Click the badge above, run the cell, and use the **"Launch Game"** button. The tunnel password will be copied automatically — just paste it on the page that opens.
+- serve the static client locally
+- proxy game assets (`/vcsky/*`, `/vcbr/*`) from the DOS Zone CDNs
+- provide save backends (local disk on Python server, Vercel Blob on Vercel)
+- provide a simple WebRTC “signaling” API for the P2P multiplayer UI (Vercel KV / Redis)
 
-Web-based port of GTA: Vice City running in browser via WebAssembly.
+> Disclaimer: this is a community-built port and is **not affiliated with Rockstar Games**. Make sure you own the original game if required in your jurisdiction.
 
-## Requirements
+## Quick start (local, Python)
 
-- Colab or Docker or Python 3.8+ or PHP 8.0+
-- Dependencies from `requirements.txt`
+Requirements: Python 3.11+ recommended.
 
-## Quick Start
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/Lolendor/reVCDOS.git
-    cd reVCDOS
-    ```
-
-2. **Configure Assets** (Optional):
-
-   By default, the project uses the **DOS Zone CDN**. For local hosting, download and place assets in [(see structure)](#project-structure):
-    *   **Resources:** `vcsky/fetched/` (or `fetched-ru/`) — `data`, `audio`, `anim`, `models` folders.
-    *   **Binaries:** `vcbr/` — `.wasm.br` and `.data.br` files for your chosen language.
-4. **Launch the Application**:
-   Choose one of the setup methods below:
-   * **Docker** (Recommended for most users) — fast and isolated.
-   * **PHP** — Simply upload the folder to your web server (FTP/Hosting).
-   * **Manual Installation** — for development and customization.
-
-## Setup & Running
-
-### Option 1: Using Docker (Recommended)
-The easiest way to get started is using Docker Compose:
-
-```bash
-VCSKY_CACHE=1 VCBR_CACHE=1 docker compose up -d --build
-```
-
-To configure server options via environment variables:
-
-```bash
-# Set port, enable auth and custom saves
-IN_PORT=3000 AUTH_LOGIN=admin AUTH_PASSWORD=secret CUSTOM_SAVES=1 docker compose up -d --build
-```
-
-| Environment Variable | Description |
-|---------------------|-------------|
-| `OUT_HOST` | External host (default: 0.0.0.0) |
-| `OUT_PORT` | External port (default: 8000) |
-| `IN_PORT` | Internal container port (default: 8000) |
-| `AUTH_LOGIN` | HTTP Basic Auth username |
-| `AUTH_PASSWORD` | HTTP Basic Auth password |
-| `CUSTOM_SAVES` | Enable local saves (set to `1`) |
-| `VCSKY_LOCAL` | Serve vcsky from local directory (set to `1`) |
-| `VCBR_LOCAL` | Serve vcbr from local directory (set to `1`) |
-| `VCSKY_URL` | Custom vcsky proxy URL |
-| `VCBR_URL` | Custom vcbr proxy URL |
-| `VCSKY_CACHE` | Cache vcsky files locally while proxying (set to `1`) |
-| `VCBR_CACHE` | Cache vcbr files locally while proxying (set to `1`) |
-
-### Option 2: Local Installation
-
-1. Install Python dependencies:
 ```bash
 pip install -r requirements.txt
+python server.py --port 8000
 ```
 
-2. Start the server:
+Open `http://localhost:8000`.
+
+### What happens locally?
+
+- `dist/` is served as static files (SPA).
+- `/vcsky/*` and `/vcbr/*` are proxied from the DOS Zone CDNs by default.
+- **Local saves are enabled by default** on the Python server and stored on disk in `saves/`.
+
+To disable the local save backend:
+
 ```bash
-python server.py --vcsky_cache --vcbr_cache
+python server.py --no_custom_saves
 ```
 
-Server starts at `http://localhost:8000`
+## Run with Docker (local)
 
-### Option 3: Shared Hosting on PHP (No installation)
-
-If you want to run the game from a hosted environment with `PHP 8.0` or above, just copy the contents of this repo to your desired hosting
-By default the `index.php` and `.htaccess` will get the job done. 
-## Server Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `--port` | int | 8000 | Server port |
-| `--custom_saves` | flag | disabled | Enable local save files (saves router) |
-| `--login` | string | none | HTTP Basic Auth username |
-| `--password` | string | none | HTTP Basic Auth password |
-| `--vcsky_local` | flag | disabled | Serve vcsky from local `vcsky/` directory |
-| `--vcbr_local` | flag | disabled | Serve vcbr from local `vcbr/` directory |
-| `--vcsky_url` | string | `https://cdn.dos.zone/vcsky/` | Custom vcsky proxy URL |
-| `--vcbr_url` | string | `https://br.cdn.dos.zone/vcsky/` | Custom vcbr proxy URL |
-| `--vcsky_cache` | flag | disabled | Cache vcsky files locally while proxying |
-| `--vcbr_cache` | flag | disabled | Cache vcbr files locally while proxying |
-
-**Examples:**
 ```bash
-# Start on custom port
-python server.py --port 3000
-
-# Enable local saves
-python server.py --custom_saves
-
-# Enable HTTP Basic Authentication
-python server.py --login admin --password secret123
-
-# Use local vcsky and vcbr files (fully offline mode)
-python server.py --vcsky_local --vcbr_local
-
-# Use custom proxy URLs
-python server.py --vcsky_url https://my-cdn.example.com/vcsky/ --vcbr_url https://my-cdn.example.com/vcbr/
-
-# Cache files locally while proxying (hybrid mode) (recommended)
-python server.py --vcsky_cache --vcbr_cache
-
-# All options combined
-python server.py --port 3000 --custom_saves --login admin --password secret123 --vcsky_local --vcbr_local
+docker compose up -d --build
 ```
 
-> **Note:** HTTP Basic Auth is only enabled when both `--login` and `--password` are provided.
+Useful environment variables (see `docker-compose.yml`):
 
-> **Note:** By default, vcsky and vcbr are proxied from DOS Zone CDN. Use `--vcsky_local` and `--vcbr_local` flags to serve files from local directories instead.
+| Variable | Purpose |
+|---|---|
+| `OUT_HOST` / `OUT_PORT` | Exposed bind/port (defaults: `0.0.0.0:8000`) |
+| `IN_PORT` | Port inside the container (default: `8000`) |
+| `AUTH_LOGIN` / `AUTH_PASSWORD` | Enable HTTP Basic Auth (both required) |
+| `VCSKY_CACHE` / `VCBR_CACHE` | Cache proxied files locally (`1` to enable) |
+| `VCSKY_LOCAL` / `VCBR_LOCAL` | Serve assets from local folders (`1` to enable) |
+| `VCSKY_URL` / `VCBR_URL` | Override upstream CDNs |
 
-> **Note:** Use `--vcsky_cache` and `--vcbr_cache` to cache proxied files locally. Files are downloaded once and served from local storage on subsequent requests.
+Example (cache + auth):
 
-## URL Parameters
+```bash
+AUTH_LOGIN=admin AUTH_PASSWORD=secret VCSKY_CACHE=1 VCBR_CACHE=1 docker compose up -d --build
+```
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `lang` | `en`, `ru` | Game language |
+## Deploy on Vercel
+
+This repo is ready for Vercel: static files are served from `dist/` and Python serverless functions provide:
+
+- `/vcsky/*` → `api/vcsky.py` (proxy `https://cdn.dos.zone/vcsky/`)
+- `/vcbr/*` → `api/vcbr.py` (proxy `https://br.cdn.dos.zone/vcsky/`, with `Content-Encoding: br`)
+- `/api/rtc/*` → `api/rtc.py` (WebRTC signaling, requires KV/Redis)
+- `/token/*` and `/saves/*` → `api/saves.py` (save storage on Vercel Blob)
+
+### Required Vercel settings
+
+No environment variables are required for the basic game + CDN proxy, but these features are optional:
+
+- **WebRTC signaling** (recommended for multiplayer UI):
+  - Connect **Vercel KV** or provide Redis via env
+  - Supported env vars:
+    - `KV_REST_API_URL`, `KV_REST_API_TOKEN` (Vercel KV / Upstash REST)
+    - or `REDIS_URL` / `KV_URL` (TCP Redis URL, `rediss://...` supported)
+    - optional: `REDIS_TLS=1` to force TLS
+  - optional: `RTC_ROOM_TTL_SECONDS` (default `900`)
+
+- **Persistent saves on Vercel**:
+  - Connect **Vercel Blob**
+  - Set `BLOB_READ_WRITE_TOKEN` (optional: `BLOB_READ_ONLY_TOKEN`)
+  - Then open the game with `?custom_saves=1` to use the “local backend” save SDK against Blob endpoints.
+
+> Note: Vercel serverless functions have execution time limits. Very large upstream downloads may hit timeouts depending on plan and region.
+
+## Server configuration (Python)
+
+The local server is `server.py` (FastAPI + static hosting).
+
+| Flag | Description |
+|---|---|
+| `--port <int>` | HTTP port (default `8000`) |
+| `--login <user>` + `--password <pass>` | Enable HTTP Basic Auth |
+| `--vcsky_local` / `--vcbr_local` | Serve from local `vcsky/` / `vcbr/` folders |
+| `--vcsky_url` / `--vcbr_url` | Override upstream CDNs |
+| `--vcsky_cache` / `--vcbr_cache` | Cache proxied files into `vcsky/` / `vcbr/` |
+| `--no_custom_saves` | Disable local save backend |
+
+## URL query parameters (client)
+
+| Param | Values | Meaning |
+|---|---|---|
+| `lang` | `en` / `ru` | Language |
 | `cheats` | `1` | Enable cheat menu (F3) |
-| `request_original_game` | `1` | Request original game files before play |
-| `fullscreen` | `0` | Disable auto-fullscreen |
+| `request_original_game` | `1` | Ask user to provide original files (UI) |
+| `fullscreen` | `0` | Disable auto fullscreen |
+| `custom_saves` | `1` | Use “local backend” save SDK (mainly for Vercel Blob setup) |
 
+Examples:
 
-**Examples:**
-- `http://localhost:8000/?lang=ru` — Russian version
-- `http://localhost:8000/?lang=en&cheats=1` — English + cheats
+- `http://localhost:8000/?lang=ru`
+- `http://localhost:8000/?lang=en&cheats=1`
 
-## Project Structure
+## Project layout (high level)
 
 ```
-├── server.py           # FastAPI proxy server
-├── index.php           # php proxy server
-├── .htaccess           # apache config for php
-├── requirements.txt    # Python dependencies
-├── additions/          # Server extensions
-│   ├── auth.py         # HTTP Basic Auth middleware
-│   ├── cache.py        # Proxy caching and brotli decompression
-│   └── saves.py        # Local saves router
-├── dist/               # Game client files
-│   ├── index.html      # Main page
-│   ├── game.js         # Game loader
-│   ├── index.js        # Module loader
-│   ├── GamepadEmulator.js  # Touch controls
-│   ├── idbfs.js        # IndexedDB filesystem
-│   ├── jsdos-cloud-sdk.js  # Cloud saves (DOS Zone)
-│   ├── jsdos-cloud-sdk-local.js  # Local saves (--custom_saves)
-│   └── modules/        # WASM modules
-│       ├── runtime.js      # WASM runtime initialization
-│       ├── loader.js       # Asset/package loading
-│       ├── fs.js           # Virtual filesystem
-│       ├── audio.js        # Audio system
-│       ├── graphics.js     # Rendering pipeline
-│       ├── events.js       # Input events handling
-│       ├── fetch.js        # Network requests (Real-time asset streaming)
-│       ├── syscalls.js     # System calls
-│       ├── main.js         # Main entry point
-│       ├── cheats.js       # Cheat engine (F3)
-│       ├── asm_consts/     # Language-specific ASM constants
-│       │   ├── en.js
-│       │   └── ru.js
-│       └── packages/       # Language-specific data packages
-│           ├── en.js
-│           └── ru.js
-├── vcbr/               # Brotli-compressed game data (optional)
-│   ├── vc-sky-en-v6.data.br
-│   ├── vc-sky-en-v6.wasm.br
-│   ├── vc-sky-ru-v6.data.br
-│   └── vc-sky-ru-v6.wasm.br
-└── vcsky/                 # Decompressed assets (optional)
-    ├── fetched/           # English version files
-    │   ├── data/
-    │   ├── audio/
-    │   ├── models/
-    │   └── anim/
-    └── fetched-ru/        # Russian version files
-        ├── data/
-        ├── audio/
-        └── ...
+dist/                # pre-built web client (served as-is)
+server.py            # local FastAPI server (static + proxies + local saves)
+api/                 # Vercel serverless functions (proxies, rtc, saves)
+additions/           # auth/cache/saves for local server
+docker/              # Docker image (Python runtime)
+docker-compose.yml   # local container setup
 ```
 
-## Features
+## Credits
 
-- 🎮 Gamepad emulation for touch devices
-- ☁️ Cloud saves via js-dos key
-- 💾 Local saves (with `--custom_saves` flag)
-- 🌍 English/Russian language support
-- 🔧 Built-in cheat engine (memory scanner, cheats)
-- 📱 Mobile touch controls
-
-## Local Saves
-
-When local saves are enabled (`--custom_saves` flag), enter any 5-character identifier in the "js-dos key" input field on the start page. This identifier will be used to store your saves in the `saves/` directory on the server.
-
-Example: Enter `mykey` or `12345` — saves will be stored as `mykey_vcsky.saves` or `12345_vcsky.saves`.
-
-## Controls (Touch)
-
-Touch controls appear automatically on mobile devices. Virtual joysticks for movement and camera, context-sensitive action buttons.
-
-## Cheats
-
-Enable with `?cheats=1`, press **F3** to open menu:
-- Memory scanner (find/edit values)
-- All classic GTA VC cheats
-- AirBreak (noclip mode)
+- HTML5 port by DOS Zone contributors (see in-game credits / `dist/index.html`)
+- Deobfuscation work and repository maintenance by community contributors
 
 ## License
 
-Do what you want. Not affiliated with Rockstar Games.
-
----
-
-**Authors:** DOS Zone ([@specialist003](https://github.com/okhmanyuk-ev), [@caiiiycuk](https://www.youtube.com/caiiiycuk), [@SerGen](https://t.me/ser_var))
-
-**Deobfuscated by**: [@Lolendor](https://github.com/Lolendor)
-
-**Russian translation:** [GamesVoice](https://www.gamesvoice.ru/)
-
-**Added by the community:**
-* PHP Support by [Rohamgames](https://github.com/Rohamgames)
-
-## Support [me](https://github.com/Lolendor)
-
-If you find this project useful:
-
-- **TON / USDT (TON)**  `UQAyBchGEKi9NnNQ3AKMQMuO-SGEhMIAKFAbkwwrsiOPj9Gy`
-- **ETH / USDT (ERC-20)** `0x69Ec02715cF65538Bb03725F03Bd4c85D33F8AC0`
-- **TRX / USDT (TRC-20)** `THgNWT9MGW52tF8qFHbAWN25UR6WTeLDMY`
+MIT (see repository license metadata). Not affiliated with Rockstar Games.
