@@ -511,6 +511,273 @@
             font-size: 0.7em;
             margin-top: 2px;
         }
+
+        /* --------- Homepage (start screen) refresh --------- */
+        :root {
+            --bg-0: #07071a;
+            --bg-1: #120731;
+            --bg-2: #17022b;
+            --panel: rgba(255, 255, 255, 0.06);
+            --panel-strong: rgba(255, 255, 255, 0.10);
+            --stroke: rgba(255, 255, 255, 0.14);
+            --text: rgba(255, 255, 255, 0.92);
+            --muted: rgba(255, 255, 255, 0.70);
+            --muted-2: rgba(255, 255, 255, 0.55);
+            --pink: #ff4193;
+            --cyan: #249ef5;
+            --gold: #ffffc0;
+        }
+
+        body {
+            color: var(--text);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: -20vmax;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(closest-side, rgba(255, 65, 147, 0.22), transparent 70%),
+                radial-gradient(closest-side, rgba(36, 158, 245, 0.22), transparent 70%),
+                radial-gradient(closest-side, rgba(255, 255, 192, 0.10), transparent 70%);
+            filter: blur(40px);
+            transform: translate3d(0, 0, 0);
+        }
+
+        body::before {
+            transform: translate(-18vmax, -8vmax) rotate(12deg);
+            opacity: 0.9;
+        }
+
+        body::after {
+            transform: translate(22vmax, 10vmax) rotate(-10deg);
+            opacity: 0.8;
+        }
+
+        .start-container {
+            width: min(1120px, 100%);
+            margin: 0 auto;
+            padding: clamp(18px, 4vw, 42px);
+            box-sizing: border-box;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 1;
+        }
+
+        .start-hero {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 900px) {
+            .start-hero {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .start-panel {
+            background: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            padding: 18px;
+            backdrop-filter: blur(18px);
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.40);
+        }
+
+        .start-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(0, 0, 0, 0.18);
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .start-title {
+            margin: 14px 0 8px 0;
+            font-size: clamp(28px, 4vw, 44px);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            text-shadow: 0 10px 45px rgba(0, 0, 0, 0.55);
+        }
+
+        .start-subtitle {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--muted);
+            max-width: 62ch;
+        }
+
+        .start-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 14px;
+        }
+
+        .click-to-play {
+            margin: 0;
+        }
+
+        .click-to-play button {
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: linear-gradient(135deg, rgba(255, 65, 147, 0.22), rgba(36, 158, 245, 0.18));
+            color: #fff;
+            text-transform: none;
+            padding: 12px 14px;
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(255, 65, 147, 0.18), 0 18px 45px rgba(36, 158, 245, 0.14);
+            text-shadow: none;
+            font-size: 18px;
+            letter-spacing: 0;
+        }
+
+        .click-to-play button:hover,
+        .click-to-play button:focus {
+            background: linear-gradient(135deg, rgba(255, 65, 147, 0.34), rgba(36, 158, 245, 0.26));
+            outline: none;
+        }
+
+        #demo-off-disclaimer {
+            color: var(--muted-2);
+            font-size: 12px;
+            line-height: 1.4;
+            margin-top: 10px;
+            max-width: 72ch;
+        }
+
+        .start-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            color: var(--muted-2);
+            font-size: 13px;
+        }
+
+        .start-links a {
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .start-links a:hover {
+            border-bottom-color: rgba(255, 255, 255, 0.45);
+        }
+
+        .start-right {
+            display: grid;
+            gap: 12px;
+            align-content: start;
+        }
+
+        .cover {
+            width: 100%;
+            max-width: 320px;
+            height: 420px;
+            margin: 0 auto;
+            border-radius: 18px;
+            border-color: rgba(36, 158, 245, 0.65);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), inset 0 0 .5em rgba(36, 158, 245, 0.30);
+        }
+
+        .start-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .start-stat {
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .start-stat b {
+            display: block;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .start-stat span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .jsdos-key {
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 14px;
+            gap: 12px;
+            align-items: stretch;
+            text-align: left;
+        }
+
+        .jsdos-key .jsdos-key-status {
+            margin-left: 8px;
+            color: var(--muted);
+        }
+
+        .jsdos-key-input {
+            width: 100%;
+            box-sizing: border-box;
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .follow-container {
+            margin: 0;
+        }
+
+        #follow {
+            color: var(--text);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        #follow:hover {
+            color: #fff;
+            border-bottom-color: rgba(255, 255, 255, 0.45);
+        }
+
+        .disclaimer {
+            max-width: none;
+            margin: 0;
+            border-color: rgba(255, 255, 255, 0.14);
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .developed-by {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .developed-by a {
+            color: var(--text);
+        }
     </style>
 </head>
 
@@ -550,23 +817,63 @@
     </div>
 
     <div class="start-container">
-        <div class="button-container">
-            <div class="cover"></div>
-            
-            <div class="click-to-play">
-                <button id="click-to-play-button">Click to play</button>
-                <div id="demo-off-disclaimer"></div>
-            </div>
-        </div>
+        <div class="start-hero">
+            <div class="start-panel">
+                <div class="start-badge">WebAssembly • Browser • No install</div>
+                <h1 class="start-title">GTA: Vice City — Web Edition</h1>
+                <p class="start-subtitle">
+                    A community-built HTML5 port that runs directly in your browser. Cloud saves are available via a
+                    js-dos key.
+                </p>
 
-        <div class="follow-container"><a id="follow" href="https://t.me/gamebase54" target="_blank">Подписывайтесь на новости и релизы</a></div>
-        <div class="jsdos-key">
-            <div>
-                <span><a id="cloud-saves-link" href="https://v8.js-dos.com/key" target="_blank">Cloud saves:</a></span>
-                <span id="cloud-saves-status" class="jsdos-key-status">checking...</span>
+                <div class="start-actions">
+                    <div class="click-to-play">
+                        <button id="click-to-play-button">Play</button>
+                        <div id="demo-off-disclaimer"></div>
+                    </div>
+                </div>
+
+                <div class="start-links">
+                    <span>Updates:</span>
+                    <a id="follow" href="https://t.me/gamebase54" target="_blank" rel="noreferrer">Telegram channel</a>
+                    <span>•</span>
+                    <a href="https://github.com/Lolendor/reVCDOS" target="_blank" rel="noreferrer">Source code</a>
+                </div>
             </div>
 
-            <input type="text" class="jsdos-key-input" placeholder="Enter js-dos key (5 len)">
+            <div class="start-right">
+                <div class="start-panel">
+                    <div class="cover" aria-hidden="true"></div>
+                    <div class="start-stats" aria-label="Highlights">
+                        <div class="start-stat">
+                            <b>Touch controls</b>
+                            <span>Optimized for mobile devices.</span>
+                        </div>
+                        <div class="start-stat">
+                            <b>Cloud saves</b>
+                            <span>Sync progress with a key.</span>
+                        </div>
+                        <div class="start-stat">
+                            <b>Fast load</b>
+                            <span>Streaming + cache-friendly.</span>
+                        </div>
+                        <div class="start-stat">
+                            <b>Fullscreen</b>
+                            <span>Optional auto-fullscreen.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="start-panel">
+                    <div class="jsdos-key">
+                        <div>
+                            <span><a id="cloud-saves-link" href="https://v8.js-dos.com/key" target="_blank" rel="noreferrer">Cloud saves:</a></span>
+                            <span id="cloud-saves-status" class="jsdos-key-status">checking...</span>
+                        </div>
+                        <input type="text" class="jsdos-key-input" placeholder="Enter js-dos key (5 len)">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="disclaimer">
