@@ -3,3 +3,4 @@ httpx
 uvicorn
 brotli
 python-multipart
+redis>=5.0.0

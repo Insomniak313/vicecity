@@ -144,9 +144,14 @@ Pour qu’il fonctionne, vous devez connecter **Vercel KV** au projet afin que V
 
 ### Variables attendues
 
-- `KV_REST_API_URL`
-- `KV_REST_API_TOKEN`
-- (optionnel) `KV_REST_API_READ_ONLY_TOKEN`
+- **Option 1 (KV REST / “Vercel KV”)**
+  - `KV_REST_API_URL`
+  - `KV_REST_API_TOKEN`
+  - (optionnel) `KV_REST_API_READ_ONLY_TOKEN`
+
+- **Option 2 (Redis URL / “Vercel Redis”)**
+  - `REDIS_URL` (format `redis://...` ou `rediss://...`)
+  - (optionnel) `REDIS_TLS=1` si votre Redis exige TLS mais fournit une URL en `redis://`
 
 ### Test rapide
 

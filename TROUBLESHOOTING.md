@@ -81,8 +81,8 @@ Empêche le déploiement de fichiers inutiles (Python backend, Docker, etc.)
 1. Dans Vercel: **Storage → KV** → créez (ou sélectionnez) un store
 2. **Connect** le store KV à votre projet
 3. Vérifiez dans **Project → Settings → Environment Variables** la présence de :
-   - `KV_REST_API_URL`
-   - `KV_REST_API_TOKEN`
+   - soit `KV_REST_API_URL` + `KV_REST_API_TOKEN`
+   - soit `REDIS_URL` (si votre intégration expose une URL Redis directe)
 4. **Redeploy** le projet (obligatoire pour appliquer les env vars)
 
 #### Erreur : `/token/get` ou `/saves/*` renvoie `501`
