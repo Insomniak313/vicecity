@@ -6,10 +6,6 @@
       "use": "@vercel/static"
     },
     {
-      "src": "index.html",
-      "use": "@vercel/static"
-    },
-    {
       "src": "api/vcsky.py",
       "use": "@vercel/python"
     },
@@ -28,8 +24,16 @@
       "destination": "/api/vcbr.py"
     },
     {
+      "source": "/index.html",
+      "destination": "/dist/index.html"
+    },
+    {
       "source": "/",
       "destination": "/dist/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/dist/:path*"
     }
   ],
   "headers": [
