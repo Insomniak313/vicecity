@@ -63,13 +63,17 @@ class _UpstashKV:
         self.url = (
             os.environ.get("UPSTASH_REDIS_REST_URL")
             or os.environ.get("KV_REST_API_URL")
+            # some setups expose Vercel-prefixed names
+            or os.environ.get("VERCEL_KV_REST_API_URL")
             or ""
         )
         self.token = (
             os.environ.get("UPSTASH_REDIS_REST_TOKEN")
             or os.environ.get("KV_REST_API_TOKEN")
+            or os.environ.get("VERCEL_KV_REST_API_TOKEN")
             # fallback for read-only flows (still useful for GET endpoints)
             or os.environ.get("KV_REST_API_READ_ONLY_TOKEN")
+            or os.environ.get("VERCEL_KV_REST_API_READ_ONLY_TOKEN")
             or ""
         )
 
@@ -118,7 +122,15 @@ class _RedisKV:
     """
 
     def __init__(self) -> None:
-        self.redis_url = os.environ.get("REDIS_URL") or ""
+        # Depending on which Vercel storage integration is connected, the URL
+        # may be exposed under different names.
+        self.redis_url = (
+            os.environ.get("REDIS_URL")
+            or os.environ.get("KV_URL")  # common for Vercel KV (rediss://...)
+            or os.environ.get("UPSTASH_REDIS_URL")  # Upstash TCP URL
+            or os.environ.get("VERCEL_REDIS_URL")
+            or ""
+        )
         self._client = None
 
     def is_configured(self) -> bool:
@@ -190,6 +202,26 @@ def _room_key(room_id: str, name: str) -> str:
 
 
 class handler(BaseHTTPRequestHandler):
+    def _kv_diagnostics(self) -> dict:
+        # Never return secret values, only presence booleans.
+        def _has(name: str) -> bool:
+            return bool((os.environ.get(name) or "").strip())
+
+        return {
+            "hasREDIS_URL": _has("REDIS_URL"),
+            "hasKV_URL": _has("KV_URL"),
+            "hasUPSTASH_REDIS_URL": _has("UPSTASH_REDIS_URL"),
+            "hasVERCEL_REDIS_URL": _has("VERCEL_REDIS_URL"),
+            "hasKV_REST_API_URL": _has("KV_REST_API_URL"),
+            "hasKV_REST_API_TOKEN": _has("KV_REST_API_TOKEN"),
+            "hasKV_REST_API_READ_ONLY_TOKEN": _has("KV_REST_API_READ_ONLY_TOKEN"),
+            "hasUPSTASH_REDIS_REST_URL": _has("UPSTASH_REDIS_REST_URL"),
+            "hasUPSTASH_REDIS_REST_TOKEN": _has("UPSTASH_REDIS_REST_TOKEN"),
+            "hasVERCEL_KV_REST_API_URL": _has("VERCEL_KV_REST_API_URL"),
+            "hasVERCEL_KV_REST_API_TOKEN": _has("VERCEL_KV_REST_API_TOKEN"),
+            "hasVERCEL_KV_REST_API_READ_ONLY_TOKEN": _has("VERCEL_KV_REST_API_READ_ONLY_TOKEN"),
+        }
+
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -204,7 +236,11 @@ class handler(BaseHTTPRequestHandler):
                 status=501,
                 data={
                     "error": "Vercel KV not configured",
-                    "hint": "Set REDIS_URL (Vercel Redis) or connect Vercel KV so KV_REST_API_URL and KV_REST_API_TOKEN are set.",
+                    "hint": (
+                        "Connect Vercel KV (recommended) so KV_REST_API_URL and KV_REST_API_TOKEN are set, "
+                        "or provide a Redis URL via REDIS_URL / KV_URL / UPSTASH_REDIS_URL."
+                    ),
+                    "diagnostics": self._kv_diagnostics(),
                 },
             )
 
@@ -257,7 +293,11 @@ class handler(BaseHTTPRequestHandler):
                 status=501,
                 data={
                     "error": "Vercel KV not configured",
-                    "hint": "Set REDIS_URL (Vercel Redis) or connect Vercel KV so KV_REST_API_URL and KV_REST_API_TOKEN are set.",
+                    "hint": (
+                        "Connect Vercel KV (recommended) so KV_REST_API_URL and KV_REST_API_TOKEN are set, "
+                        "or provide a Redis URL via REDIS_URL / KV_URL / UPSTASH_REDIS_URL."
+                    ),
+                    "diagnostics": self._kv_diagnostics(),
                 },
             )
 
