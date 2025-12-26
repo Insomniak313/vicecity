@@ -36,7 +36,7 @@ const DATA_PACKAGE = {
         start: 7604416,
         end: 33051462
     }, {
-        filename: "/vc-assets/local/audio/sfx.sdt",
+        filename: "/vc-assets/local/audio/sdt",
         start: 33051462,
         end: 33250282
     }, {

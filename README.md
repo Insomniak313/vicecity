@@ -1,10 +1,14 @@
 # GTA Vice City — HTML5 Port (DOS Zone)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/13GFRIxTwVbixv0Vup9MSVXnB4SLmA3G7?usp=sharing)
+
+> **Fast Start:** Run the server in one click using Google Colab. Click the badge above, run the cell, and use the **"Launch Game"** button. The tunnel password will be copied automatically — just paste it on the page that opens.
+
 Web-based port of GTA: Vice City running in browser via WebAssembly.
 
 ## Requirements
 
-- Docker or Python 3.8+ or PHP 8.0+
+- Colab or Docker or Python 3.8+ or PHP 8.0+
 - Dependencies from `requirements.txt`
 
 ## Quick Start
@@ -126,6 +130,8 @@ python server.py --port 3000 --custom_saves --login admin --password secret123 -
 |-----------|--------|-------------|
 | `lang` | `en`, `ru` | Game language |
 | `cheats` | `1` | Enable cheat menu (F3) |
+| `request_original_game` | `1` | Request original game files before play |
+| `fullscreen` | `0` | Disable auto-fullscreen |
 
 
 **Examples:**
@@ -231,3 +237,5 @@ Do what you want. Not affiliated with Rockstar Games.
 If you find this project useful:
 
 - **TON / USDT (TON)**  `UQAyBchGEKi9NnNQ3AKMQMuO-SGEhMIAKFAbkwwrsiOPj9Gy`
+- **ETH / USDT (ERC-20)** `0x69Ec02715cF65538Bb03725F03Bd4c85D33F8AC0`
+- **TRX / USDT (TRC-20)** `THgNWT9MGW52tF8qFHbAWN25UR6WTeLDMY`
