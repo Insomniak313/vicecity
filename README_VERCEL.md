@@ -133,6 +133,16 @@ Proxie les requêtes vers `https://br.cdn.dos.zone/vcsky/`
 Ce projet inclut un “signaling” WebRTC via `api/rtc.py` utilisé par `dist/p2p-webrtc.js` (endpoints `/api/rtc/*`).
 Pour qu’il fonctionne, vous devez connecter **Vercel KV** au projet afin que Vercel injecte les variables d’environnement KV.
 
+### Alternative gratuite (sans Vercel KV) : Upstash Redis (REST)
+
+Si **Vercel KV** n’est pas dispo sur votre plan, vous pouvez utiliser **Upstash Redis** directement (souvent avec un free tier) :
+
+1. Créez une base Redis sur Upstash
+2. Récupérez :
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+3. Ajoutez-les dans Vercel (**Project → Settings → Environment Variables**) puis **Redeploy**
+
 ### Étapes (Dashboard Vercel)
 
 1. **Storage → KV → Create**
@@ -151,6 +161,24 @@ Pour qu’il fonctionne, vous devez connecter **Vercel KV** au projet afin que V
 
 - Ouvrez la page, puis cliquez **“Créer une salle”** (UI multijoueur).
 - Si KV n’est pas configuré, les endpoints `/api/rtc/*` répondront `501` avec un message d’aide.
+
+## 💾 Saves persistantes sur Vercel via Blob
+
+Vercel n’ayant pas de disque persistant, les saves “local backend” peuvent être rendues persistantes via **Vercel Blob**.
+Ce repo expose désormais :
+- `GET /token/get?id=xxxxx`
+- `POST /saves/upload`
+- `GET /saves/download/{token}/{fileName}`
+
+### Activation
+
+1. Dans Vercel: **Storage → Blob** → créez/choisissez un store et connectez-le au projet
+2. Vérifiez que vous avez `BLOB_READ_WRITE_TOKEN` (et optionnellement `BLOB_READ_ONLY_TOKEN`) dans les env vars
+3. **Redeploy**
+
+### Utilisation
+
+Ajoutez `?custom_saves=1` à l’URL pour utiliser `dist/jsdos-cloud-sdk-local.js` (backend local) avec Blob côté serveur.
 
 ## 🆚 Comparaison avec le serveur Python original
 

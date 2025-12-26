@@ -16,12 +16,32 @@
     {
       "src": "api/rtc.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "api/saves.py",
+      "use": "@vercel/python"
     }
   ],
   "rewrites": [
     {
       "source": "/api/rtc/:path*",
       "destination": "/api/rtc.py"
+    },
+    {
+      "source": "/token/:path*",
+      "destination": "/api/saves.py"
+    },
+    {
+      "source": "/saves/:path*",
+      "destination": "/api/saves.py"
+    },
+    {
+      "source": "/api/token/:path*",
+      "destination": "/api/saves.py"
+    },
+    {
+      "source": "/api/saves/:path*",
+      "destination": "/api/saves.py"
     },
     {
       "source": "/vcsky/:path*",

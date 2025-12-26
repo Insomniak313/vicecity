@@ -85,6 +85,16 @@ Empêche le déploiement de fichiers inutiles (Python backend, Docker, etc.)
    - `KV_REST_API_TOKEN`
 4. **Redeploy** le projet (obligatoire pour appliquer les env vars)
 
+✅ **Alternative si KV est payant** : utilisez Upstash directement
+- Ajoutez `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` dans les env vars Vercel
+- Redeploy
+
+#### Erreur : `/token/get` ou `/saves/*` renvoie `501`
+**Cause** : **Vercel Blob** non configuré (token manquant).  
+**Solution** :
+- Ajoutez `BLOB_READ_WRITE_TOKEN` (et optionnellement `BLOB_READ_ONLY_TOKEN`) dans les env vars du projet
+- Redeploy
+
 #### Erreur : 404 sur les fichiers statiques
 **Cause** : Chemins incorrects dans `vercel.json`  
 **Solution** : Vérifiez que tous vos fichiers sont bien dans `/dist/`
